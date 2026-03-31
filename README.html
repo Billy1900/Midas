@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midas — Compound Engineering Framework</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --gold:      #C9A84C;
+    --gold-dim:  #8C6D2F;
+    --gold-glow: rgba(201,168,76,0.18);
+    --gold-pale: rgba(201,168,76,0.07);
+    --bg:        #0A0A0B;
+    --bg2:       #111114;
+    --bg3:       #16161A;
+    --border:    rgba(201,168,76,0.18);
+    --border2:   rgba(255,255,255,0.06);
+    --text:      #E8E4DA;
+    --text-dim:  #8A8680;
+    --text-mute: #4A4845;
+    --online:    #4ECBA8;
+    --offline:   #7B8FD4;
+    --alert:     #D4674E;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Noise texture overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    opacity: 0.028;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 100px 0 72px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.14) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .logo-mark {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 6px 14px 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 36px;
+    background: var(--gold-pale);
+  }
+
+  .logo-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--gold);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(52px, 8vw, 88px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, #E8C96A 0%, #C9A84C 40%, #8C6D2F 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px; font-weight: 300;
+    color: var(--text-dim);
+    margin: 24px 0 48px;
+    letter-spacing: 0.01em;
+  }
+
+  .badges {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 400;
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--border2);
+    color: var(--text-dim);
+    background: var(--bg3);
+  }
+
+  .badge.gold { border-color: var(--border); color: var(--gold); background: var(--gold-pale); }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 64px 0;
+  }
+
+  /* ── Section headings ── */
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+  }
+
+  p { color: var(--text-dim); margin-bottom: 16px; }
+
+  /* ── Pipeline SVG containers ── */
+  .pipeline-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 32px 0;
+    overflow-x: auto;
+  }
+
+  .pipeline-wrap svg { display: block; margin: 0 auto; }
+
+  /* ── Feature grid ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 32px 0;
+  }
+
+  .feature-cell {
+    background: var(--bg2);
+    padding: 28px 28px 24px;
+    transition: background 0.2s;
+  }
+
+  .feature-cell:hover { background: var(--bg3); }
+
+  .feature-icon {
+    font-size: 20px; margin-bottom: 14px; display: block;
+  }
+
+  .feature-cell h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: #fff; margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .feature-cell p { font-size: 13px; margin: 0; line-height: 1.6; }
+
+  /* ── Code blocks ── */
+  pre {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #C8C2B6;
+  }
+
+  .kw  { color: var(--gold); }
+  .cm  { color: var(--text-mute); font-style: italic; }
+  .st  { color: #9DCF9A; }
+  .fn  { color: #8BBCDF; }
+  .nm  { color: #D4AE8A; }
+
+  /* ── Module table ── */
+  .mod-table {
+    width: 100%; border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 13.5px;
+  }
+
+  .mod-table th {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-mute);
+    text-align: left;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .mod-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border2);
+    vertical-align: top;
+  }
+
+  .mod-table tr:last-child td { border-bottom: none; }
+  .mod-table tr:hover td { background: var(--bg3); }
+
+  .mod-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .mod-lines {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    white-space: nowrap;
+  }
+
+  .mod-desc { color: var(--text-dim); line-height: 1.55; }
+
+  /* ── Knowledge base tree ── */
+  .kb-tree {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 20px 22px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    line-height: 2;
+    color: var(--text-dim);
+    margin: 20px 0;
+  }
+
+  .kb-tree .dir  { color: var(--gold); }
+  .kb-tree .file { color: var(--text-dim); }
+  .kb-tree .note { color: var(--text-mute); font-style: italic; }
+
+  /* ── Alert strip ── */
+  .note-strip {
+    border-left: 2px solid var(--gold);
+    background: var(--gold-pale);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 24px 0;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+
+  .note-strip strong { color: var(--gold); }
+
+  /* ── Metrics pills ── */
+  .metric-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 16px 0;
+  }
+
+  .metric-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text-dim);
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 64px 0 48px;
+    color: var(--text-mute);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+    border-top: 1px solid var(--border2);
+    margin-top: 80px;
+  }
+
+  /* ── Inline code ── */
+  p code, li code, td code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--gold);
+  }
+
+  ul, ol { color: var(--text-dim); padding-left: 20px; margin-bottom: 16px; }
+  li { margin-bottom: 5px; }
+  li code { color: var(--gold); }
+
+  /* ── Loop label ── */
+  .loop-label {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+
+  .loop-label.offline { background: rgba(123,143,212,0.15); color: var(--offline); border: 1px solid rgba(123,143,212,0.3); }
+  .loop-label.online  { background: rgba(78,203,168,0.12); color: var(--online);  border: 1px solid rgba(78,203,168,0.28); }
+  .loop-label.shared  { background: var(--gold-pale); color: var(--gold); border: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="logo-mark"><span class="logo-dot"></span>Midas Quant Systems</div>
+
+    <h1>Mi<span>das</span></h1>
+
+    <p class="tagline">
+      Compound Engineering Framework for Alpha Feature Research<br>
+      <em>Every iteration makes the next one cheaper.</em>
+    </p>
+
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+<!-- ═══════════════════════════════════════════════════════════ OVERVIEW -->
+<div class="divider"></div>
+
+<h2>Overview</h2>
+<h3>Two loops. One compounding knowledge base.</h3>
+<p>
+  Midas is a dual-loop system for discovering and maintaining alpha features
+  on the multi-asset crypto perpetual futures trading pipeline.
+  The <strong style="color:var(--offline)">Offline Loop</strong> searches for new predictive signals using an LLM as a quant researcher;
+  the <strong style="color:var(--online)">Online Loop</strong> monitors live features, diagnoses degradation, and fires kill signals.
+  Both loops write structured <strong style="color:var(--gold)">Learning Documents</strong> to a shared knowledge base,
+  so that every failure and every success permanently improves future research.
+</p>
+
+<div class="note-strip">
+  <strong>The compound principle:</strong> each unit of work makes subsequent work easier.
+  A feature that fails in the offline loop produces a learning that the next session reads before generating candidates.
+  A feature that degrades in production produces an online learning the offline loop reads before its next plan.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ MASTER PIPELINE -->
+<div class="divider"></div>
+<h2>System Architecture</h2>
+<h3>Master pipeline</h3>
+
+<div class="pipeline-wrap">
+<svg width="860" height="480" viewBox="0 0 860 480" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+  <defs>
+    <!-- Glow filters -->
+    <filter id="glow-gold" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-online" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-offline" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Arrow markers -->
+    <marker id="arr-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#C9A84C"/>
+    </marker>
+    <marker id="arr-offline" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#7B8FD4"/>
+    </marker>
+    <marker id="arr-online" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4ECBA8"/>
+    </marker>
+    <marker id="arr-dim" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4A4845"/>
+    </marker>
+
+    <!-- Gradients -->
+    <linearGradient id="grad-offline" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3a4580"/>
+      <stop offset="100%" stop-color="#1e2a5a"/>
+    </linearGradient>
+    <linearGradient id="grad-online" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1a4a3d"/>
+      <stop offset="100%" stop-color="#0f2d25"/>
+    </linearGradient>
+    <linearGradient id="grad-kb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a2a0a"/>
+      <stop offset="100%" stop-color="#1e1608"/>
+    </linearGradient>
+    <linearGradient id="grad-node-offline" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2a3470"/>
+      <stop offset="100%" stop-color="#161e48"/>
+    </linearGradient>
+    <linearGradient id="grad-node-online" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a4a3d"/>
+      <stop offset="100%" stop-color="#0a2820"/>
+    </linearGradient>
+    <linearGradient id="grad-node-kb" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3a2c10"/>
+      <stop offset="100%" stop-color="#1e1608"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background lane: Offline -->
+  <rect x="14" y="16" width="832" height="148" rx="10" fill="url(#grad-offline)" opacity="0.45"/>
+  <rect x="14" y="16" width="832" height="148" rx="10" fill="none" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.25"/>
+  <text x="28" y="36" font-size="9" font-weight="600" letter-spacing="2" fill="#7B8FD4" opacity="0.7" text-decoration="none">OFFLINE LOOP — DISCOVERY</text>
+
+  <!-- Background lane: Online -->
+  <rect x="14" y="190" width="832" height="148" rx="10" fill="url(#grad-online)" opacity="0.45"/>
+  <rect x="14" y="190" width="832" height="148" rx="10" fill="none" stroke="#4ECBA8" stroke-width="1" stroke-opacity="0.25"/>
+  <text x="28" y="210" font-size="9" font-weight="600" letter-spacing="2" fill="#4ECBA8" opacity="0.7">ONLINE LOOP — IMPROVEMENT</text>
+
+  <!-- Background: Knowledge Base -->
+  <rect x="14" y="364" width="832" height="100" rx="10" fill="url(#grad-kb)" opacity="0.6"/>
+  <rect x="14" y="364" width="832" height="100" rx="10" fill="none" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="28" y="384" font-size="9" font-weight="600" letter-spacing="2" fill="#C9A84C" opacity="0.8">KNOWLEDGE BASE — SHARED COMPOUND LEARNING</text>
+
+  <!-- ─── Offline nodes ─── -->
+  <!-- Plan -->
+  <rect x="38" y="52" width="100" height="72" rx="7" fill="url(#grad-node-offline)" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="88" y="83" text-anchor="middle" font-size="18" fill="#7B8FD4" opacity="0.9">📋</text>
+  <text x="88" y="103" text-anchor="middle" font-size="11" font-weight="600" fill="#C0C8F0">Plan</text>
+  <text x="88" y="117" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.65">LLM research plan</text>
+
+  <!-- Write -->
+  <rect x="208" y="52" width="100" height="72" rx="7" fill="url(#grad-node-offline)" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="258" y="83" text-anchor="middle" font-size="18" fill="#7B8FD4" opacity="0.9">✍</text>
+  <text x="258" y="103" text-anchor="middle" font-size="11" font-weight="600" fill="#C0C8F0">Write</text>
+  <text x="258" y="117" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.65">DSL expression gen</text>
+
+  <!-- Assess -->
+  <rect x="378" y="52" width="100" height="72" rx="7" fill="url(#grad-node-offline)" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="428" y="83" text-anchor="middle" font-size="18" fill="#7B8FD4" opacity="0.9">🔬</text>
+  <text x="428" y="103" text-anchor="middle" font-size="11" font-weight="600" fill="#C0C8F0">Assess</text>
+  <text x="428" y="117" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.65">6-agent evaluation</text>
+
+  <!-- Learn (offline) -->
+  <rect x="548" y="52" width="100" height="72" rx="7" fill="url(#grad-node-offline)" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="598" y="83" text-anchor="middle" font-size="18" fill="#7B8FD4" opacity="0.9">💡</text>
+  <text x="598" y="103" text-anchor="middle" font-size="11" font-weight="600" fill="#C0C8F0">Learn</text>
+  <text x="598" y="117" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.65">Write to KB</text>
+
+  <!-- Candidate store (offline) -->
+  <rect x="718" y="52" width="110" height="72" rx="7" fill="#0e1428" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+  <text x="773" y="83" text-anchor="middle" font-size="18" fill="#7B8FD4" opacity="0.6">📁</text>
+  <text x="773" y="103" text-anchor="middle" font-size="11" font-weight="500" fill="#8891C4">Candidates</text>
+  <text x="773" y="117" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.45">features/candidates/</text>
+
+  <!-- Offline arrows: Plan→Write→Assess→Learn→Candidates -->
+  <line x1="139" y1="88" x2="204" y2="88" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#arr-offline)"/>
+  <line x1="309" y1="88" x2="374" y2="88" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#arr-offline)"/>
+  <line x1="479" y1="88" x2="544" y2="88" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#arr-offline)"/>
+  <line x1="649" y1="88" x2="714" y2="88" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="4 3" marker-end="url(#arr-offline)"/>
+
+  <!-- Refine back-arc -->
+  <path d="M548,110 C520,148 240,148 208,110" fill="none" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="3 4" marker-end="url(#arr-offline)"/>
+  <text x="378" y="160" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.45" font-style="italic">refine (if failing)</text>
+
+  <!-- ─── Online nodes ─── -->
+  <!-- Deploy -->
+  <rect x="38" y="226" width="100" height="72" rx="7" fill="url(#grad-node-online)" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="88" y="257" text-anchor="middle" font-size="18" fill="#4ECBA8" opacity="0.9">🚀</text>
+  <text x="88" y="277" text-anchor="middle" font-size="11" font-weight="600" fill="#A0E8D4">Deploy</text>
+  <text x="88" y="291" text-anchor="middle" font-size="9" fill="#4ECBA8" opacity="0.65">features/deployed/</text>
+
+  <!-- Monitor -->
+  <rect x="208" y="226" width="100" height="72" rx="7" fill="url(#grad-node-online)" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="258" y="257" text-anchor="middle" font-size="18" fill="#4ECBA8" opacity="0.9">📊</text>
+  <text x="258" y="277" text-anchor="middle" font-size="11" font-weight="600" fill="#A0E8D4">Monitor</text>
+  <text x="258" y="291" text-anchor="middle" font-size="9" fill="#4ECBA8" opacity="0.65">rolling IC · decay</text>
+
+  <!-- Diagnose -->
+  <rect x="378" y="226" width="100" height="72" rx="7" fill="url(#grad-node-online)" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="428" y="257" text-anchor="middle" font-size="18" fill="#4ECBA8" opacity="0.9">🩺</text>
+  <text x="428" y="277" text-anchor="middle" font-size="11" font-weight="600" fill="#A0E8D4">Diagnose</text>
+  <text x="428" y="291" text-anchor="middle" font-size="9" fill="#4ECBA8" opacity="0.65">LLM root-cause</text>
+
+  <!-- Learn (online) -->
+  <rect x="548" y="226" width="100" height="72" rx="7" fill="url(#grad-node-online)" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="598" y="257" text-anchor="middle" font-size="18" fill="#4ECBA8" opacity="0.9">💡</text>
+  <text x="598" y="277" text-anchor="middle" font-size="11" font-weight="600" fill="#A0E8D4">Learn</text>
+  <text x="598" y="291" text-anchor="middle" font-size="9" fill="#4ECBA8" opacity="0.65">Write to KB</text>
+
+  <!-- Kill / Fix -->
+  <rect x="718" y="226" width="110" height="72" rx="7" fill="#1a0a0a" stroke="#D4674E" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="773" y="257" text-anchor="middle" font-size="18" fill="#D4674E" opacity="0.7">⚡</text>
+  <text x="773" y="277" text-anchor="middle" font-size="11" font-weight="500" fill="#D4A0A0">Kill / Fix</text>
+  <text x="773" y="291" text-anchor="middle" font-size="9" fill="#D4674E" opacity="0.5">on_kill callback</text>
+
+  <!-- Online arrows: Deploy→Monitor→Diagnose→Learn→Kill/Fix -->
+  <line x1="139" y1="262" x2="204" y2="262" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#arr-online)"/>
+  <line x1="309" y1="262" x2="374" y2="262" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#arr-online)"/>
+  <line x1="479" y1="262" x2="544" y2="262" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#arr-online)"/>
+  <line x1="649" y1="262" x2="714" y2="262" stroke="#D4674E" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="4 3" marker-end="url(#arr-online)"/>
+
+  <!-- Improve back-arc -->
+  <path d="M548,284 C520,322 240,322 208,284" fill="none" stroke="#4ECBA8" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="3 4" marker-end="url(#arr-online)"/>
+  <text x="378" y="334" text-anchor="middle" font-size="9" fill="#4ECBA8" opacity="0.4" font-style="italic">fix & redeploy</text>
+
+  <!-- ─── Knowledge Base nodes ─── -->
+  <!-- Offline learnings -->
+  <rect x="50" y="388" width="130" height="58" rx="6" fill="url(#grad-node-kb)" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="115" y="412" text-anchor="middle" font-size="11" font-weight="600" fill="#E8C96A">Offline Learnings</text>
+  <text x="115" y="428" text-anchor="middle" font-size="9" fill="#C9A84C" opacity="0.6">learnings/offline/</text>
+  <text x="115" y="440" text-anchor="middle" font-size="9" fill="#8C6D2F" opacity="0.6">YYYY-MM-DD-*.md</text>
+
+  <!-- Online learnings -->
+  <rect x="220" y="388" width="130" height="58" rx="6" fill="url(#grad-node-kb)" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="285" y="412" text-anchor="middle" font-size="11" font-weight="600" fill="#E8C96A">Online Learnings</text>
+  <text x="285" y="428" text-anchor="middle" font-size="9" fill="#C9A84C" opacity="0.6">learnings/online/</text>
+  <text x="285" y="440" text-anchor="middle" font-size="9" fill="#8C6D2F" opacity="0.6">YYYY-MM-DD-*.md</text>
+
+  <!-- Skills -->
+  <rect x="390" y="388" width="100" height="58" rx="6" fill="url(#grad-node-kb)" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="440" y="412" text-anchor="middle" font-size="11" font-weight="600" fill="#E8C96A">Skills</text>
+  <text x="440" y="428" text-anchor="middle" font-size="9" fill="#C9A84C" opacity="0.6">skills/</text>
+  <text x="440" y="440" text-anchor="middle" font-size="9" fill="#8C6D2F" opacity="0.6">DSL · patterns</text>
+
+  <!-- Regimes -->
+  <rect x="530" y="388" width="100" height="58" rx="6" fill="url(#grad-node-kb)" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="580" y="412" text-anchor="middle" font-size="11" font-weight="600" fill="#E8C96A">Regimes</text>
+  <text x="580" y="428" text-anchor="middle" font-size="9" fill="#C9A84C" opacity="0.6">regimes/</text>
+  <text x="580" y="440" text-anchor="middle" font-size="9" fill="#8C6D2F" opacity="0.6">market docs</text>
+
+  <!-- Thresholds -->
+  <rect x="672" y="388" width="154" height="58" rx="6" fill="url(#grad-node-kb)" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="749" y="412" text-anchor="middle" font-size="11" font-weight="600" fill="#E8C96A">Thresholds + Reports</text>
+  <text x="749" y="428" text-anchor="middle" font-size="9" fill="#C9A84C" opacity="0.6">thresholds.json</text>
+  <text x="749" y="440" text-anchor="middle" font-size="9" fill="#8C6D2F" opacity="0.6">reports/daily/</text>
+
+  <!-- ─── Cross-loop arrows ─── -->
+  <!-- Offline Learn → KB Offline Learnings -->
+  <line x1="598" y1="124" x2="200" y2="388" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="3 4" marker-end="url(#arr-offline)"/>
+
+  <!-- Online Learn → KB Online Learnings -->
+  <line x1="598" y1="298" x2="338" y2="388" stroke="#4ECBA8" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="3 4" marker-end="url(#arr-online)"/>
+
+  <!-- KB → Plan (offline reads learnings) -->
+  <path d="M115,388 C80,360 60,300 60,190" fill="none" stroke="#C9A84C" stroke-width="1.2" stroke-opacity="0.5" stroke-dasharray="3 4" marker-end="url(#arr-gold)"/>
+
+  <!-- KB → Diagnose (online reads learnings) -->
+  <path d="M285,388 C310,355 380,320 390,298" fill="none" stroke="#C9A84C" stroke-width="1.2" stroke-opacity="0.5" stroke-dasharray="3 4" marker-end="url(#arr-gold)"/>
+
+  <!-- Candidates → Deploy (promote pipeline) -->
+  <line x1="773" y1="124" x2="773" y2="165" stroke="#C9A84C" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#arr-gold)"/>
+  <line x1="773" y1="165" x2="138" y2="220" stroke="#C9A84C" stroke-width="1.5" stroke-opacity="0.5" marker-end="url(#arr-gold)"/>
+  <text x="500" y="190" text-anchor="middle" font-size="9" fill="#C9A84C" opacity="0.7" font-weight="600">promote →</text>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ OFFLINE DETAIL -->
+<div class="divider"></div>
+<h2>Offline Loop</h2>
+
+<span class="loop-label offline">Discovery Pipeline</span>
+<h3>Plan → Write → Assess → Learn</h3>
+<p>
+  Each session begins by reading the knowledge base — past failures, past successes,
+  regime docs — before generating a research plan. The LLM then proposes 3 diverse
+  DSL expressions. Each is validated, computed against historical data, and scored by
+  six evaluation agents running in parallel threads. Failing expressions are refined;
+  passing ones are saved as candidates.
+</p>
+
+<div class="pipeline-wrap">
+<svg width="800" height="280" viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+  <defs>
+    <marker id="a-off" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#7B8FD4"/>
+    </marker>
+    <marker id="a-val" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#D4674E"/>
+    </marker>
+    <marker id="a-acc" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#C9A84C"/>
+    </marker>
+  </defs>
+
+  <!-- Step boxes -->
+  <!-- 1. Load KB -->
+  <rect x="10" y="100" width="110" height="64" rx="6" fill="#1a1e3a" stroke="#7B8FD4" stroke-width="1.2" stroke-opacity="0.5"/>
+  <text x="65" y="127" text-anchor="middle" font-size="10" font-weight="600" fill="#C0C8F0">Load KB</text>
+  <text x="65" y="142" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.7">learnings · skills</text>
+  <text x="65" y="155" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.7">thresholds</text>
+
+  <!-- 2. Plan (LLM) -->
+  <rect x="160" y="100" width="110" height="64" rx="6" fill="#1a1e3a" stroke="#7B8FD4" stroke-width="1.2" stroke-opacity="0.6"/>
+  <text x="215" y="127" text-anchor="middle" font-size="10" font-weight="600" fill="#C0C8F0">Plan</text>
+  <text x="215" y="142" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.7">hypothesis · risks</text>
+  <text x="215" y="155" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.7">target horizon</text>
+  <text x="215" y="90" text-anchor="middle" font-size="8" fill="#7B8FD4" opacity="0.45">LLM</text>
+
+  <!-- 3. Generate -->
+  <rect x="320" y="100" width="110" height="64" rx="6" fill="#1a1e3a" stroke="#7B8FD4" stroke-width="1.2" stroke-opacity="0.6"/>
+  <text x="375" y="127" text-anchor="middle" font-size="10" font-weight="600" fill="#C0C8F0">Generate</text>
+  <text x="375" y="142" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.7">3 candidates</text>
+  <text x="375" y="155" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.7">DSL expressions</text>
+  <text x="375" y="90" text-anchor="middle" font-size="8" fill="#7B8FD4" opacity="0.45">LLM</text>
+
+  <!-- 4. Validate -->
+  <rect x="320" y="195" width="110" height="52" rx="6" fill="#1a0e0e" stroke="#D4674E" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="375" y="220" text-anchor="middle" font-size="10" font-weight="600" fill="#D4A0A0">DSLValidator</text>
+  <text x="375" y="236" text-anchor="middle" font-size="8.5" fill="#D4674E" opacity="0.65">syntax · depth</text>
+
+  <!-- 5. Evaluate (6 agents) -->
+  <rect x="480" y="100" width="130" height="64" rx="6" fill="#1a1e3a" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.7"/>
+  <text x="545" y="122" text-anchor="middle" font-size="10" font-weight="600" fill="#C0C8F0">6-Agent Eval</text>
+  <text x="545" y="136" text-anchor="middle" font-size="7.5" fill="#7B8FD4" opacity="0.65">predictive · decay · cost</text>
+  <text x="545" y="149" text-anchor="middle" font-size="7.5" fill="#7B8FD4" opacity="0.65">diversify · overfit · regime</text>
+  <text x="545" y="158" text-anchor="middle" font-size="7" fill="#7B8FD4" opacity="0.4">∥ parallel threads</text>
+
+  <!-- 6. Learn + Save -->
+  <rect x="670" y="100" width="110" height="64" rx="6" fill="#1e1608" stroke="#C9A84C" stroke-width="1.2" stroke-opacity="0.6"/>
+  <text x="725" y="127" text-anchor="middle" font-size="10" font-weight="600" fill="#E8C96A">Learn</text>
+  <text x="725" y="142" text-anchor="middle" font-size="8.5" fill="#C9A84C" opacity="0.7">LearningDocument</text>
+  <text x="725" y="155" text-anchor="middle" font-size="8.5" fill="#C9A84C" opacity="0.7">→ KB + candidates/</text>
+  <text x="725" y="90" text-anchor="middle" font-size="8" fill="#C9A84C" opacity="0.45">LLM</text>
+
+  <!-- Arrows -->
+  <line x1="120" y1="132" x2="156" y2="132" stroke="#7B8FD4" stroke-width="1.3" stroke-opacity="0.7" marker-end="url(#a-off)"/>
+  <line x1="270" y1="132" x2="316" y2="132" stroke="#7B8FD4" stroke-width="1.3" stroke-opacity="0.7" marker-end="url(#a-off)"/>
+
+  <!-- Generate → Validate -->
+  <line x1="375" y1="164" x2="375" y2="191" stroke="#D4674E" stroke-width="1" stroke-opacity="0.6" marker-end="url(#a-val)"/>
+
+  <!-- Validate → Generate (invalid) -->
+  <path d="M320,221 C280,221 280,132 316,132" fill="none" stroke="#D4674E" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="3 3" marker-end="url(#a-val)"/>
+  <text x="268" y="188" text-anchor="middle" font-size="8" fill="#D4674E" opacity="0.5">invalid</text>
+
+  <!-- Validate → Evaluate (valid) -->
+  <path d="M430,221 C460,221 470,164 476,132" fill="none" stroke="#7B8FD4" stroke-width="1.3" stroke-opacity="0.55" marker-end="url(#a-off)"/>
+  <text x="468" y="200" text-anchor="middle" font-size="8" fill="#7B8FD4" opacity="0.5">valid</text>
+
+  <!-- Evaluate → Learn -->
+  <line x1="610" y1="132" x2="666" y2="132" stroke="#C9A84C" stroke-width="1.3" stroke-opacity="0.7" marker-end="url(#a-acc)"/>
+
+  <!-- Refine back-arc from Evaluate to Generate -->
+  <path d="M545,164 C545,240 375,240 375,164" fill="none" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="3 4" marker-end="url(#a-off)"/>
+  <text x="460" y="256" text-anchor="middle" font-size="8" fill="#7B8FD4" opacity="0.4" font-style="italic">refine if failing</text>
+
+  <!-- IC pass/fail -->
+  <text x="645" y="110" text-anchor="middle" font-size="8" fill="#C9A84C" opacity="0.5">pass</text>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ EVALUATOR DETAIL -->
+<div class="divider"></div>
+<h2>Evaluator</h2>
+
+<span class="loop-label offline">Static · Deterministic · Parallel</span>
+<h3>Six evaluation agents</h3>
+<p>
+  <code>MultiAgentEvaluator</code> runs six specialised agents in parallel threads via
+  <code>ThreadPoolExecutor</code>. All metric computation is vectorised numpy/pandas —
+  no LLM calls in the inner loop. Each agent returns a <code>AgentVerdict</code>
+  with a pass/fail, a 0–1 score, and concrete improvement suggestions fed back
+  to the LLM refine prompt.
+</p>
+
+<div class="metric-row">
+  <span class="metric-pill">📈 predictive_power</span>
+  <span class="metric-pill">⏱ decay_analysis</span>
+  <span class="metric-pill">💸 trading_cost</span>
+  <span class="metric-pill">🔀 diversification</span>
+  <span class="metric-pill">🔍 overfit_detection</span>
+  <span class="metric-pill">🌊 regime_robustness</span>
+</div>
+
+<div class="pipeline-wrap">
+<svg width="760" height="200" viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+  <defs>
+    <marker id="a2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#7B8FD4"/>
+    </marker>
+    <marker id="a2g" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#C9A84C"/>
+    </marker>
+  </defs>
+
+  <!-- Input -->
+  <rect x="10" y="70" width="110" height="60" rx="6" fill="#0d1030" stroke="#7B8FD4" stroke-width="1.2" stroke-opacity="0.5"/>
+  <text x="65" y="97" text-anchor="middle" font-size="10" font-weight="600" fill="#C0C8F0">feature</text>
+  <text x="65" y="111" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.65">pd.Series</text>
+  <text x="65" y="123" text-anchor="middle" font-size="8.5" fill="#7B8FD4" opacity="0.65">fwd_returns</text>
+
+  <!-- AlphaEvaluator -->
+  <rect x="165" y="50" width="130" height="100" rx="6" fill="#141830" stroke="#7B8FD4" stroke-width="1.5" stroke-opacity="0.7"/>
+  <text x="230" y="75" text-anchor="middle" font-size="10" font-weight="600" fill="#C0C8F0">AlphaEvaluator</text>
+  <text x="230" y="91" text-anchor="middle" font-size="7.5" fill="#7B8FD4" opacity="0.55">ic · rank_ic · ir</text>
+  <text x="230" y="104" text-anchor="middle" font-size="7.5" fill="#7B8FD4" opacity="0.55">decay · turnover</text>
+  <text x="230" y="117" text-anchor="middle" font-size="7.5" fill="#7B8FD4" opacity="0.55">correlation · marginal_ic</text>
+  <text x="230" y="130" text-anchor="middle" font-size="7.5" fill="#7B8FD4" opacity="0.55">regime · oos · composite</text>
+  <text x="230" y="145" text-anchor="middle" font-size="7" fill="#7B8FD4" opacity="0.35">numpy vectorised</text>
+
+  <!-- Agents fan-out -->
+  <rect x="355" y="18"  width="120" height="28" rx="4" fill="#181e3c" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="415" y="36" text-anchor="middle" font-size="9" fill="#C0C8F0">predictive_power</text>
+
+  <rect x="355" y="54"  width="120" height="28" rx="4" fill="#181e3c" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="415" y="72" text-anchor="middle" font-size="9" fill="#C0C8F0">decay_analysis</text>
+
+  <rect x="355" y="90"  width="120" height="28" rx="4" fill="#181e3c" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="415" y="108" text-anchor="middle" font-size="9" fill="#C0C8F0">trading_cost</text>
+
+  <rect x="355" y="126" width="120" height="28" rx="4" fill="#181e3c" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="415" y="144" text-anchor="middle" font-size="9" fill="#C0C8F0">diversification</text>
+
+  <rect x="355" y="162" width="120" height="28" rx="4" fill="#181e3c" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="415" y="180" text-anchor="middle" font-size="9" fill="#C0C8F0">overfit_detection</text>
+
+  <!-- Arrows into agents -->
+  <line x1="295" y1="100" x2="351" y2="32"  stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2)"/>
+  <line x1="295" y1="100" x2="351" y2="68"  stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2)"/>
+  <line x1="295" y1="100" x2="351" y2="104" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2)"/>
+  <line x1="295" y1="100" x2="351" y2="140" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2)"/>
+  <line x1="295" y1="100" x2="351" y2="176" stroke="#7B8FD4" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2)"/>
+
+  <!-- Input → Evaluator -->
+  <line x1="120" y1="100" x2="161" y2="100" stroke="#7B8FD4" stroke-width="1.3" stroke-opacity="0.7" marker-end="url(#a2)"/>
+
+  <!-- Agents → MultiAgentResult -->
+  <rect x="540" y="50" width="130" height="100" rx="6" fill="#1e1608" stroke="#C9A84C" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="605" y="73" text-anchor="middle" font-size="10" font-weight="600" fill="#E8C96A">MultiAgentResult</text>
+  <text x="605" y="89" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">overall_pass</text>
+  <text x="605" y="102" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">blocking_issues</text>
+  <text x="605" y="115" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">improvement_suggestions</text>
+  <text x="605" y="128" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">verdicts[6]</text>
+  <text x="605" y="141" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">composite_score</text>
+
+  <line x1="475" y1="32"  x2="536" y2="80"  stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2g)"/>
+  <line x1="475" y1="68"  x2="536" y2="90"  stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2g)"/>
+  <line x1="475" y1="104" x2="536" y2="100" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2g)"/>
+  <line x1="475" y1="140" x2="536" y2="115" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2g)"/>
+  <line x1="475" y1="176" x2="536" y2="130" stroke="#C9A84C" stroke-width="1" stroke-opacity="0.4" marker-end="url(#a2g)"/>
+
+  <!-- Parallel annotation -->
+  <text x="415" y="10" text-anchor="middle" font-size="8" fill="#7B8FD4" opacity="0.4">∥ ThreadPoolExecutor</text>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ ONLINE DETAIL -->
+<div class="divider"></div>
+<h2>Online Loop</h2>
+
+<span class="loop-label online">Live Production Monitoring</span>
+<h3>Deploy → Monitor → Diagnose → Learn</h3>
+<p>
+  <code>OnlineMonitor.process_update()</code> is called on every completed bar (typically hourly).
+  It maintains rolling buffers for up to 30 days, computes <code>ic_5d / ic_30d</code> ratios,
+  realised turnover, and PnL attribution. When thresholds are breached, <code>AlertEngine</code>
+  fires an <code>Alert</code>. Critical alerts trigger an async LLM diagnosis that writes a
+  structured learning to the knowledge base — the core compound-learning hook.
+</p>
+
+<div class="pipeline-wrap">
+<svg width="800" height="220" viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+  <defs>
+    <marker id="a3" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#4ECBA8"/>
+    </marker>
+    <marker id="a3r" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#D4674E"/>
+    </marker>
+    <marker id="a3g" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L7,3 z" fill="#C9A84C"/>
+    </marker>
+  </defs>
+
+  <!-- Bar feed -->
+  <rect x="10" y="78" width="90" height="64" rx="6" fill="#0a2010" stroke="#4ECBA8" stroke-width="1.2" stroke-opacity="0.45"/>
+  <text x="55" y="105" text-anchor="middle" font-size="9.5" font-weight="600" fill="#A0E8D4">Bar Feed</text>
+  <text x="55" y="119" text-anchor="middle" font-size="8" fill="#4ECBA8" opacity="0.6">feature_values</text>
+  <text x="55" y="131" text-anchor="middle" font-size="8" fill="#4ECBA8" opacity="0.6">forward_return</text>
+
+  <!-- MonitorEngine -->
+  <rect x="150" y="60" width="120" height="100" rx="6" fill="#0e2818" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="210" y="83" text-anchor="middle" font-size="10" font-weight="600" fill="#A0E8D4">MonitorEngine</text>
+  <text x="210" y="99" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">rolling buffers (30d)</text>
+  <text x="210" y="112" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">ic_1d / ic_5d / ic_30d</text>
+  <text x="210" y="125" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">half_life · turnover</text>
+  <text x="210" y="138" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">pnl_bps · slippage</text>
+  <text x="210" y="151" text-anchor="middle" font-size="7" fill="#4ECBA8" opacity="0.35">FeatureMetrics[ ]</text>
+
+  <!-- AlertEngine -->
+  <rect x="325" y="60" width="110" height="100" rx="6" fill="#0e1808" stroke="#4ECBA8" stroke-width="1.3" stroke-opacity="0.55"/>
+  <text x="380" y="83" text-anchor="middle" font-size="10" font-weight="600" fill="#A0E8D4">AlertEngine</text>
+  <text x="380" y="99" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">ic_ratio &lt; 0.7 → warn</text>
+  <text x="380" y="112" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">ic_ratio &lt; 0.5 → crit</text>
+  <text x="380" y="125" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">slippage &gt; 2x → crit</text>
+  <text x="380" y="138" text-anchor="middle" font-size="7.5" fill="#4ECBA8" opacity="0.6">pnl &lt; −50bps → warn</text>
+  <text x="380" y="151" text-anchor="middle" font-size="7" fill="#4ECBA8" opacity="0.35">Alert objects</text>
+
+  <!-- DiagnoseAgent -->
+  <rect x="493" y="60" width="120" height="100" rx="6" fill="#1a0e0e" stroke="#D4674E" stroke-width="1.3" stroke-opacity="0.5"/>
+  <text x="553" y="83" text-anchor="middle" font-size="10" font-weight="600" fill="#D4A0A0">DiagnoseAgent</text>
+  <text x="553" y="99" text-anchor="middle" font-size="7.5" fill="#D4674E" opacity="0.65">root_cause</text>
+  <text x="553" y="112" text-anchor="middle" font-size="7.5" fill="#D4674E" opacity="0.65">evidence list</text>
+  <text x="553" y="125" text-anchor="middle" font-size="7.5" fill="#D4674E" opacity="0.65">fix_proposal (DSL)</text>
+  <text x="553" y="138" text-anchor="middle" font-size="7.5" fill="#D4674E" opacity="0.65">kill_signal: bool</text>
+  <text x="553" y="151" text-anchor="middle" font-size="7" fill="#D4674E" opacity="0.4">LLM async</text>
+
+  <!-- KB Write -->
+  <rect x="673" y="60" width="110" height="100" rx="6" fill="#1e1608" stroke="#C9A84C" stroke-width="1.3" stroke-opacity="0.6"/>
+  <text x="728" y="83" text-anchor="middle" font-size="10" font-weight="600" fill="#E8C96A">KB Write</text>
+  <text x="728" y="99" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">learnings/online/</text>
+  <text x="728" y="112" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">reports/diagnoses/</text>
+  <text x="728" y="125" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">reports/daily/</text>
+  <text x="728" y="138" text-anchor="middle" font-size="7.5" fill="#C9A84C" opacity="0.65">on_kill(feature)</text>
+
+  <!-- Arrows -->
+  <line x1="100" y1="110" x2="146" y2="110" stroke="#4ECBA8" stroke-width="1.3" stroke-opacity="0.7" marker-end="url(#a3)"/>
+  <line x1="270" y1="110" x2="321" y2="110" stroke="#4ECBA8" stroke-width="1.3" stroke-opacity="0.7" marker-end="url(#a3)"/>
+
+  <!-- AlertEngine → Diagnose (critical only) -->
+  <line x1="435" y1="110" x2="489" y2="110" stroke="#D4674E" stroke-width="1.3" stroke-opacity="0.6" marker-end="url(#a3r)"/>
+  <text x="462" y="105" text-anchor="middle" font-size="8" fill="#D4674E" opacity="0.55">critical</text>
+
+  <!-- Diagnose → KB -->
+  <line x1="613" y1="110" x2="669" y2="110" stroke="#C9A84C" stroke-width="1.3" stroke-opacity="0.6" marker-end="url(#a3g)"/>
+
+  <!-- warning path -->
+  <path d="M380,160 C380,190 120,200 55,190 C30,185 30,165 55,155" fill="none" stroke="#4ECBA8" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="3 3" marker-end="url(#a3)"/>
+  <text x="215" y="205" text-anchor="middle" font-size="8" fill="#4ECBA8" opacity="0.35" font-style="italic">warning → on_alert callback</text>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ FEATURE LIFECYCLE -->
+<div class="divider"></div>
+<h2>Feature Lifecycle</h2>
+<h3>Candidate → Deployed → Archived</h3>
+
+<div class="pipeline-wrap">
+<svg width="740" height="130" viewBox="0 0 740 130" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+  <defs>
+    <marker id="a4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#C9A84C"/>
+    </marker>
+    <marker id="a4r" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#D4674E"/>
+    </marker>
+  </defs>
+
+  <rect x="20"  y="30" width="160" height="70" rx="7" fill="#1a1e3a" stroke="#7B8FD4" stroke-width="1.2" stroke-opacity="0.55"/>
+  <text x="100" y="58" text-anchor="middle" font-size="11" font-weight="600" fill="#C0C8F0">candidates/</text>
+  <text x="100" y="74" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.6">offline loop → accept</text>
+  <text x="100" y="88" text-anchor="middle" font-size="9" fill="#7B8FD4" opacity="0.6">awaiting promotion</text>
+
+  <rect x="280" y="30" width="160" height="70" rx="7" fill="#0e2818" stroke="#4ECBA8" stroke-width="1.5" stroke-opacity="0.65"/>
+  <text x="360" y="58" text-anchor="middle" font-size="11" font-weight="600" fill="#A0E8D4">deployed/</text>
+  <text x="360" y="74" text-anchor="middle" font-size="9" fill="#4ECBA8" opacity="0.6">live in production</text>
+  <text x="360" y="88" text-anchor="middle" font-size="9" fill="#4ECBA8" opacity="0.6">monitored hourly</text>
+
+  <rect x="540" y="30" width="160" height="70" rx="7" fill="#1a1008" stroke="#8C6D2F" stroke-width="1.2" stroke-opacity="0.5"/>
+  <text x="620" y="58" text-anchor="middle" font-size="11" font-weight="600" fill="#C9A84C" opacity="0.7">archived/</text>
+  <text x="620" y="74" text-anchor="middle" font-size="9" fill="#8C6D2F" opacity="0.7">retired features</text>
+  <text x="620" y="88" text-anchor="middle" font-size="9" fill="#8C6D2F" opacity="0.7">failure analysis attached</text>
+
+  <!-- Arrows -->
+  <line x1="180" y1="65" x2="276" y2="65" stroke="#C9A84C" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#a4)"/>
+  <text x="228" y="58" text-anchor="middle" font-size="9" fill="#C9A84C" opacity="0.7">promote()</text>
+
+  <line x1="440" y1="65" x2="536" y2="65" stroke="#D4674E" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#a4r)"/>
+  <text x="488" y="58" text-anchor="middle" font-size="9" fill="#D4674E" opacity="0.7">demote()</text>
+
+  <!-- CLI labels -->
+  <text x="228" y="108" text-anchor="middle" font-size="8" fill="#C9A84C" opacity="0.4" font-family="DM Mono, monospace">python -m midas promote &lt;name&gt;</text>
+  <text x="488" y="108" text-anchor="middle" font-size="8" fill="#D4674E" opacity="0.4" font-family="DM Mono, monospace">python -m midas demote &lt;name&gt;</text>
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ MODULES -->
+<div class="divider"></div>
+<h2>Modules</h2>
+<h3>What's in the package</h3>
+
+<table class="mod-table">
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Responsibility</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="mod-name">models.py</span></td>
+      <td class="mod-desc">All shared dataclasses — <code>EvaluationResult</code>, <code>MultiAgentResult</code>, <code>Alert</code>, <code>FeatureMetrics</code>, <code>LearningDocument</code>, <code>DailyReport</code>, <code>DiagnoseResult</code>. No external imports beyond stdlib.</td>
+    </tr>
+    <tr>
+      <td><span class="mod-name">kb.py</span></td>
+      <td class="mod-desc">Filesystem abstraction for the knowledge base. All reads and writes go through typed helpers. Seeds default Midas DSL skill, prompt templates, and threshold JSON on first run.</td>
+    </tr>
+    <tr>
+      <td><span class="mod-name">evaluator.py</span></td>
+      <td class="mod-desc"><code>AlphaEvaluator</code> computes all <code>EvaluationResult</code> fields (vectorised). <code>MultiAgentEvaluator</code> runs six specialised agents in <code>ThreadPoolExecutor</code> and synthesises verdicts.</td>
+    </tr>
+    <tr>
+      <td><span class="mod-name">proposer.py</span></td>
+      <td class="mod-desc"><code>DSLValidator</code> — fast syntax/depth/lookback check, no LLM. <code>ExpressionProposer</code> — Plan, Generate, and Refine phases via Anthropic API.</td>
+    </tr>
+    <tr>
+      <td><span class="mod-name">loops.py</span></td>
+      <td class="mod-desc">The offline compound loop. Orchestrates Plan→Write→Assess→Learn, handles refine back-arc, writes <code>LearningDocument</code> and candidate markdown to KB every run.</td>
+    </tr>
+    <tr>
+      <td><span class="mod-name">monitor.py</span></td>
+      <td class="mod-desc"><code>MonitorEngine</code> (rolling buffers), <code>AlertEngine</code> (threshold rules), <code>DiagnoseAgent</code> (async LLM diagnosis + kill signal), <code>OnlineMonitor</code> (top-level orchestrator).</td>
+    </tr>
+    <tr>
+      <td><span class="mod-name">promoter.py</span></td>
+      <td class="mod-desc"><code>FeaturePromoter</code> — candidate→deployed→archived transitions with markdown state-patching. Exposes <code>pipeline_summary()</code> and <code>print_pipeline()</code>.</td>
+    </tr>
+    <tr>
+      <td><span class="mod-name">factory.py</span></td>
+      <td class="mod-desc"><code>create_midas()</code> one-liner bootstrap. <code>Midas</code> container wires all components. CLI entry point (<code>python -m midas</code>) for status, promote, demote, learnings.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════ KB STRUCTURE -->
+<div class="divider"></div>
+<h2>Knowledge Base</h2>
+<h3>Directory structure</h3>
+
+<div class="kb-tree">
+<span class="dir">midas-kb/</span><br>
+├── <span class="dir">skills/</span><br>
+│   ├── <span class="file">midas-dsl.md</span>         <span class="note"># full DSL operator reference — seeded automatically</span><br>
+│   └── <span class="file">factor-patterns.md</span>   <span class="note"># common alpha pattern catalogue</span><br>
+├── <span class="dir">knowledge/</span><br>
+│   ├── <span class="dir">features/</span><br>
+│   │   ├── <span class="dir">deployed/</span>           <span class="note"># live in production — monitored every bar</span><br>
+│   │   ├── <span class="dir">candidates/</span>         <span class="note"># passed backtest, awaiting promote()</span><br>
+│   │   └── <span class="dir">archived/</span>           <span class="note"># retired, failure analysis attached</span><br>
+│   ├── <span class="dir">learnings/</span><br>
+│   │   ├── <span class="dir">offline/</span>            <span class="note"># YYYY-MM-DD-&lt;pattern&gt;.md</span><br>
+│   │   └── <span class="dir">online/</span>             <span class="note"># YYYY-MM-DD-&lt;feature&gt;-&lt;alert_type&gt;.md</span><br>
+│   ├── <span class="dir">regimes/</span>              <span class="note"># high-vol-crypto.md, low-vol-grind.md …</span><br>
+│   └── <span class="file">thresholds.json</span>       <span class="note"># pass/fail thresholds for all agents</span><br>
+├── <span class="dir">proposer/prompts/</span><br>
+│   ├── <span class="file">plan.md</span>               <span class="note"># seeded on first run, fully editable</span><br>
+│   ├── <span class="file">generate.md</span><br>
+│   └── <span class="file">refine.md</span><br>
+└── <span class="dir">reports/</span><br>
+    ├── <span class="dir">daily/</span>                <span class="note"># YYYY-MM-DD.md — generated each session</span><br>
+    └── <span class="dir">diagnoses/</span>            <span class="note"># per-alert LLM diagnosis reports</span><br>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ QUICKSTART -->
+<div class="divider"></div>
+<h2>Quickstart</h2>
+<h3>Bootstrap in three lines</h3>
+
+<pre><code><span class="kw">from</span> midas.factory <span class="kw">import</span> create_midas
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># One-liner bootstrap — creates KB directory tree, seeds skills &amp; prompts</span>
+midas = <span class="fn">create_midas</span>(
+    kb_path  = <span class="st">"./midas-kb"</span>,
+    api_key  = <span class="st">"sk-ant-..."</span>,          <span class="cm"># or set ANTHROPIC_API_KEY</span>
+)
+
+<span class="cm"># ── Offline loop ─────────────────────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">my_data_fn</span>():
+    <span class="cm"># Return: (compute_fn, forward_returns_df, regime_series)</span>
+    <span class="kw">return</span> engine.compute_feature, engine.get_fwd_returns(), engine.get_regimes()
+
+learning = midas.offline.<span class="fn">run</span>(
+    research_goal    = <span class="st">"Short-term mean-reversion on VWAP deviation"</span>,
+    existing_factors = midas.promoter.<span class="fn">list_deployed</span>(),
+    data_fn          = my_data_fn,
+    regime           = <span class="st">"HIGH_VOL"</span>,
+)
+<span class="fn">print</span>(learning.pattern_identified)   <span class="cm"># → "ATR-normalised VWAP deviation is robust"</span>
+
+<span class="cm"># ── Promote winning candidate ─────────────────────────────────────────────</span>
+midas.promoter.<span class="fn">promote</span>(<span class="st">"vwap_zscore_mean_rev"</span>)
+
+<span class="cm"># ── Online loop ──────────────────────────────────────────────────────────</span>
+monitor = midas.<span class="fn">build_online</span>(
+    feature_names = midas.promoter.<span class="fn">list_deployed</span>(),
+    on_kill       = <span class="kw">lambda</span> name: engine.<span class="fn">disable_feature</span>(name),
+)
+
+<span class="kw">async for</span> bar <span class="kw">in</span> engine.live_feed():
+    <span class="kw">await</span> monitor.<span class="fn">process_update</span>(
+        timestamp      = bar.ts,
+        feature_values = bar.signals,
+        forward_return = bar.ret_1h,
+        regime         = bar.regime,
+        market_context = {<span class="st">"btc_vol"</span>: bar.btc_vol},
+    )
+</code></pre>
+
+<h3 style="margin-top:32px;">CLI commands</h3>
+
+<pre><code><span class="cm"># View the current feature pipeline</span>
+python -m midas status --kb ./midas-kb
+
+<span class="cm"># Promote a candidate to deployed</span>
+python -m midas promote vwap_zscore_mean_rev
+
+<span class="cm"># Retire a live feature with a reason</span>
+python -m midas demote vwap_zscore_mean_rev --reason <span class="st">"IC consistently &lt; 0 in LOW_VOL regime"</span>
+
+<span class="cm"># Print the 5 most recent learning documents</span>
+python -m midas learnings --n 5
+</code></pre>
+
+<!-- ═══════════════════════════════════════════════════════════ FEATURES -->
+<div class="divider"></div>
+<h2>Design Decisions</h2>
+
+<div class="feature-grid">
+  <div class="feature-cell">
+    <span class="feature-icon">⚡</span>
+    <h4>No LLM in the inner loop</h4>
+    <p>All metric computation is vectorised numpy/pandas. The LLM is called only for Plan, Generate, Refine, Learn, and Diagnose — never per-expression evaluation. Hundreds of expressions can be scored per second.</p>
+  </div>
+  <div class="feature-cell">
+    <span class="feature-icon">🔒</span>
+    <h4>DSL validation before compute</h4>
+    <p><code>DSLValidator</code> catches unknown operators, negative lookbacks, unbalanced parens, and excessive nesting depth before the expression ever reaches the feature engine — saving latency and preventing crashes.</p>
+  </div>
+  <div class="feature-cell">
+    <span class="feature-icon">🧠</span>
+    <h4>Structured learning, not chat history</h4>
+    <p>Each loop run produces a markdown <code>LearningDocument</code> with typed fields: <em>why it worked/failed, pattern identified, suggestions</em>. These are loaded verbatim into future prompts — no summarisation loss.</p>
+  </div>
+  <div class="feature-cell">
+    <span class="feature-icon">🔀</span>
+    <h4>Parallel agent evaluation</h4>
+    <p>Six specialised agents each evaluate one dimension of quality and run concurrently via <code>ThreadPoolExecutor</code>. Each agent returns concrete improvement suggestions that are directly injected into the Refine prompt.</p>
+  </div>
+  <div class="feature-cell">
+    <span class="feature-icon">📁</span>
+    <h4>Filesystem as source of truth</h4>
+    <p>No database. The knowledge base is plain markdown files in a predictable directory tree — git-trackable, human-readable, easy to inspect and edit. <code>KnowledgeBase</code> provides a typed API so no code touches paths directly.</p>
+  </div>
+  <div class="feature-cell">
+    <span class="feature-icon">🌊</span>
+    <h4>Regime-aware throughout</h4>
+    <p>Regime labels thread through every stage: evaluation scores IC per-regime, the plan prompt loads current regime, the diagnose agent correlates degradation against regime shifts. No regime-blindness.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ THRESHOLDS -->
+<div class="divider"></div>
+<h2>Default Thresholds</h2>
+<h3>Configurable in <code>knowledge/thresholds.json</code></h3>
+
+<pre><code>{
+  <span class="st">"min_rank_ic"</span>:       <span class="nm">0.02</span>,   <span class="cm">// Spearman IC must exceed this</span>
+  <span class="st">"min_ir"</span>:            <span class="nm">0.50</span>,   <span class="cm">// IC / IC_std ratio</span>
+  <span class="st">"max_turnover"</span>:      <span class="nm">0.80</span>,   <span class="cm">// mean abs daily position change</span>
+  <span class="st">"max_correlation"</span>:   <span class="nm">0.70</span>,   <span class="cm">// max correlation with any deployed factor</span>
+  <span class="st">"max_overfit_ratio"</span>: <span class="nm">1.50</span>,   <span class="cm">// IS_IC / OOS_IC must stay below this</span>
+  <span class="st">"min_oos_ic"</span>:        <span class="nm">0.01</span>,   <span class="cm">// out-of-sample IC floor</span>
+  <span class="st">"min_composite"</span>:     <span class="nm">0.30</span>    <span class="cm">// weighted composite score floor</span>
+}</code></pre>
+
+</div><!-- /wrap -->
+</main>
+
+
+</body>
+</html>
