@@ -6,7 +6,7 @@
 
 Midas is a dual-loop system for discovering and maintaining predictive alpha features on crypto perpetual futures. An **Offline Loop** searches for new signals using an LLM as a quant researcher. An **Online Loop** monitors live features, diagnoses degradation, and fires kill signals. Both loops write structured learning documents to a shared knowledge base — so every failure and every success permanently improves future research.
 
-→ **[Full visual documentation](./index.html)** (open in browser for the pipeline diagrams)
+→ **[Full visual documentation](https://billy1900.github.io/Midas/)**
 
 ---
 
