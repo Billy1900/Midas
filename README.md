@@ -316,5 +316,3 @@ midas = create_midas(
 - `pyyaml` — LLM response parsing
 
 ---
-
-*Midas v0.1.0 — 3,030 lines — 7/7 tests passing*
