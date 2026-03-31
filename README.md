@@ -218,6 +218,8 @@ All prompt templates are seeded on first run and are fully editable — changes 
 
 ## Integrating Your Feature Engine
 
+NOTE: The Feature Engine all depends on the `compute(expression: str) -> pd.Series` interface. You can wrap any engine with this interface — even if it’s a simple pandas eval or a complex Spark job. Midas is agnostic to how you compute feature values, as long as you can express it as a DSL string and return a pandas Series.
+
 Midas has two integration seams:
 
 **Offline** — pass a `data_fn` callable to `loop.run()`:
