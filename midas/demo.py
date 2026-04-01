@@ -191,9 +191,34 @@ def run_demo(
     base_dir.mkdir(parents=True, exist_ok=True)
     offline_kb = base_dir / "midas-kb"
     online_kb = base_dir / "midas-kb-online"
+    # Safely prepare demo KB directories: only delete if they are empty or clearly marked
+    # as demo outputs, to avoid wiping a real knowledge base by accident.
     for folder in (offline_kb, online_kb):
         if folder.exists():
-            shutil.rmtree(folder)
+            marker = folder / ".midas-demo"
+            if marker.exists():
+                shutil.rmtree(folder)
+            else:
+                # Allow deletion of empty directories, but refuse to delete non-empty ones
+                # that are not marked as demo outputs.
+                try:
+                    is_empty = not any(folder.iterdir())
+                except OSError:
+                    is_empty = False
+                if is_empty:
+                    shutil.rmtree(folder)
+                else:
+                    raise RuntimeError(
+                        f"Refusing to delete non-empty directory '{folder}' that does not look like a demo output."
+                    )
+        # (Re)create the folder and mark it as a demo directory for future safe cleanup.
+        folder.mkdir(parents=True, exist_ok=True)
+        marker = folder / ".midas-demo"
+        try:
+            marker.touch(exist_ok=True)
+        except OSError:
+            # If we cannot create the marker, still proceed, but future runs may refuse to delete.
+            pass
 
     llm, chosen_model = _create_demo_llm(provider, api_key, model)
     compute_fn, fwd_returns, regimes = make_synthetic_data()
