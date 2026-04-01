@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Midas — Compound Engineering Framework</title>
+<title>Midas - Compound Engineering Framework</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
@@ -955,11 +955,11 @@
     </tr>
     <tr>
       <td><span class="mod-name">proposer.py</span></td>
-      <td class="mod-desc"><code>DSLValidator</code> — fast syntax/depth/lookback check, no LLM. <code>ExpressionProposer</code> — Plan, Generate, and Refine phases via Anthropic API.</td>
+      <td class="mod-desc"><code>DSLValidator</code> - fast syntax, depth, and lookback checks with no LLM calls. <code>ExpressionProposer</code> handles the Plan, Generate, and Refine phases through the configured provider, including OpenAI and Anthropic.</td>
     </tr>
     <tr>
       <td><span class="mod-name">loops.py</span></td>
-      <td class="mod-desc">The offline compound loop. Orchestrates Plan→Write→Assess→Learn, handles refine back-arc, writes <code>LearningDocument</code> and candidate markdown to KB every run.</td>
+      <td class="mod-desc">The offline compound loop. Orchestrates Plan -&gt; Write -&gt; Assess -&gt; Learn, handles refinement, and writes <code>LearningDocument</code> plus candidate markdown to the knowledge base every run.</td>
     </tr>
     <tr>
       <td><span class="mod-name">monitor.py</span></td>
@@ -967,11 +967,11 @@
     </tr>
     <tr>
       <td><span class="mod-name">promoter.py</span></td>
-      <td class="mod-desc"><code>FeaturePromoter</code> — candidate→deployed→archived transitions with markdown state-patching. Exposes <code>pipeline_summary()</code> and <code>print_pipeline()</code>.</td>
+      <td class="mod-desc"><code>FeaturePromoter</code> manages candidate -&gt; deployed -&gt; archived transitions through markdown state updates. Exposes <code>pipeline_summary()</code> and <code>print_pipeline()</code>.</td>
     </tr>
     <tr>
       <td><span class="mod-name">factory.py</span></td>
-      <td class="mod-desc"><code>create_midas()</code> one-liner bootstrap. <code>Midas</code> container wires all components. CLI entry point (<code>python -m midas</code>) for status, promote, demote, learnings.</td>
+      <td class="mod-desc"><code>create_midas()</code> bootstraps the package. The <code>Midas</code> container wires all components together. The CLI entry point (<code>python -m midas</code>) supports status, promote, demote, reject, learnings, and demo commands.</td>
     </tr>
   </tbody>
 </table>
@@ -983,43 +983,48 @@
 
 <div class="kb-tree">
 <span class="dir">midas-kb/</span><br>
-├── <span class="dir">skills/</span><br>
-│   ├── <span class="file">midas-dsl.md</span>         <span class="note"># full DSL operator reference — seeded automatically</span><br>
-│   └── <span class="file">factor-patterns.md</span>   <span class="note"># common alpha pattern catalogue</span><br>
-├── <span class="dir">knowledge/</span><br>
-│   ├── <span class="dir">features/</span><br>
-│   │   ├── <span class="dir">deployed/</span>           <span class="note"># live in production — monitored every bar</span><br>
-│   │   ├── <span class="dir">candidates/</span>         <span class="note"># passed backtest, awaiting promote()</span><br>
-│   │   └── <span class="dir">archived/</span>           <span class="note"># retired, failure analysis attached</span><br>
-│   ├── <span class="dir">learnings/</span><br>
-│   │   ├── <span class="dir">offline/</span>            <span class="note"># YYYY-MM-DD-&lt;pattern&gt;.md</span><br>
-│   │   └── <span class="dir">online/</span>             <span class="note"># YYYY-MM-DD-&lt;feature&gt;-&lt;alert_type&gt;.md</span><br>
-│   ├── <span class="dir">regimes/</span>              <span class="note"># high-vol-crypto.md, low-vol-grind.md …</span><br>
-│   └── <span class="file">thresholds.json</span>       <span class="note"># pass/fail thresholds for all agents</span><br>
-├── <span class="dir">proposer/prompts/</span><br>
-│   ├── <span class="file">plan.md</span>               <span class="note"># seeded on first run, fully editable</span><br>
-│   ├── <span class="file">generate.md</span><br>
-│   └── <span class="file">refine.md</span><br>
-└── <span class="dir">reports/</span><br>
-    ├── <span class="dir">daily/</span>                <span class="note"># YYYY-MM-DD.md — generated each session</span><br>
-    └── <span class="dir">diagnoses/</span>            <span class="note"># per-alert LLM diagnosis reports</span><br>
+|-- <span class="dir">skills/</span><br>
+|   |-- <span class="file">midas-dsl.md</span>         <span class="note"># full DSL operator reference - seeded automatically</span><br>
+|   `-- <span class="file">factor-patterns.md</span>   <span class="note"># common alpha pattern catalogue</span><br>
+|-- <span class="dir">knowledge/</span><br>
+|   |-- <span class="dir">features/</span><br>
+|   |   |-- <span class="dir">deployed/</span>         <span class="note"># live in production - monitored every bar</span><br>
+|   |   |-- <span class="dir">candidates/</span>       <span class="note"># passed backtest, awaiting promote()</span><br>
+|   |   `-- <span class="dir">archived/</span>         <span class="note"># retired, failure analysis attached</span><br>
+|   |-- <span class="dir">learnings/</span><br>
+|   |   |-- <span class="dir">offline/</span>          <span class="note"># YYYY-MM-DD-&lt;pattern&gt;.md</span><br>
+|   |   `-- <span class="dir">online/</span>           <span class="note"># YYYY-MM-DD-&lt;feature&gt;-&lt;alert_type&gt;.md</span><br>
+|   |-- <span class="dir">regimes/</span><br>
+|   `-- <span class="file">thresholds.json</span>      <span class="note"># pass/fail thresholds for all agents</span><br>
+|-- <span class="dir">proposer/prompts/</span><br>
+|   |-- <span class="file">plan.md</span>              <span class="note"># seeded on first run, fully editable</span><br>
+|   |-- <span class="file">generate.md</span><br>
+|   `-- <span class="file">refine.md</span><br>
+`-- <span class="dir">reports/</span><br>
+    |-- <span class="dir">daily/</span>               <span class="note"># YYYY-MM-DD.md - generated each session</span><br>
+    `-- <span class="dir">diagnoses/</span>           <span class="note"># per-alert LLM diagnosis reports</span><br>
 </div>
+<p style="margin-top:14px;">
+  This repository intentionally keeps <code>demo_artifacts/</code> and example <code>midas-kb/</code> outputs as
+  demonstration artifacts so readers can inspect the files written by the framework.
+</p>
 
 <!-- ═══════════════════════════════════════════════════════════ QUICKSTART -->
 <div class="divider"></div>
 <h2>Quickstart</h2>
 <h3>Bootstrap in three lines</h3>
 
-<pre><code><span class="kw">from</span> midas.factory <span class="kw">import</span> create_midas
+<pre><code><span class="kw">from</span> midas <span class="kw">import</span> create_midas
 <span class="kw">import</span> pandas <span class="kw">as</span> pd
 
-<span class="cm"># One-liner bootstrap — creates KB directory tree, seeds skills &amp; prompts</span>
+<span class="cm"># One-line bootstrap - creates the KB directory tree, seeds skills and prompts</span>
 midas = <span class="fn">create_midas</span>(
     kb_path  = <span class="st">"./midas-kb"</span>,
-    api_key  = <span class="st">"sk-ant-..."</span>,          <span class="cm"># or set ANTHROPIC_API_KEY</span>
+    provider = <span class="st">"openai"</span>,             <span class="cm"># or "anthropic"</span>
+    api_key  = <span class="st">"..."</span>,                <span class="cm"># or use environment variables</span>
 )
 
-<span class="cm"># ── Offline loop ─────────────────────────────────────────────────────────</span>
+<span class="cm"># Offline loop</span>
 <span class="kw">def</span> <span class="fn">my_data_fn</span>():
     <span class="cm"># Return: (compute_fn, forward_returns_df, regime_series)</span>
     <span class="kw">return</span> engine.compute_feature, engine.get_fwd_returns(), engine.get_regimes()
@@ -1030,12 +1035,12 @@ learning = midas.offline.<span class="fn">run</span>(
     data_fn          = my_data_fn,
     regime           = <span class="st">"HIGH_VOL"</span>,
 )
-<span class="fn">print</span>(learning.pattern_identified)   <span class="cm"># → "ATR-normalised VWAP deviation is robust"</span>
+<span class="fn">print</span>(learning.pattern_identified)   <span class="cm"># saved to the knowledge base for future sessions</span>
 
-<span class="cm"># ── Promote winning candidate ─────────────────────────────────────────────</span>
+<span class="cm"># Promote a winning candidate</span>
 midas.promoter.<span class="fn">promote</span>(<span class="st">"vwap_zscore_mean_rev"</span>)
 
-<span class="cm"># ── Online loop ──────────────────────────────────────────────────────────</span>
+<span class="cm"># Online loop</span>
 monitor = midas.<span class="fn">build_online</span>(
     feature_names = midas.promoter.<span class="fn">list_deployed</span>(),
     on_kill       = <span class="kw">lambda</span> name: engine.<span class="fn">disable_feature</span>(name),
@@ -1057,13 +1062,19 @@ monitor = midas.<span class="fn">build_online</span>(
 python -m midas status --kb ./midas-kb
 
 <span class="cm"># Promote a candidate to deployed</span>
-python -m midas promote vwap_zscore_mean_rev
+python -m midas promote vwap_zscore_mean_rev --kb ./midas-kb
 
 <span class="cm"># Retire a live feature with a reason</span>
-python -m midas demote vwap_zscore_mean_rev --reason <span class="st">"IC consistently &lt; 0 in LOW_VOL regime"</span>
+python -m midas demote vwap_zscore_mean_rev --kb ./midas-kb --reason <span class="st">"IC consistently &lt; 0 in LOW_VOL regime"</span>
+
+<span class="cm"># Reject a candidate back to archived</span>
+python -m midas reject noisy_ob_imbalance --kb ./midas-kb --reason <span class="st">"overfit ratio 2.4"</span>
 
 <span class="cm"># Print the 5 most recent learning documents</span>
-python -m midas learnings --n 5
+python -m midas learnings --kb ./midas-kb --n 5
+
+<span class="cm"># Run the bundled demo</span>
+python -m midas demo
 </code></pre>
 
 <!-- ═══════════════════════════════════════════════════════════ FEATURES -->
