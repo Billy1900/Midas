@@ -17,22 +17,22 @@ and record the results.
 
 ### LLM Provider Support
 
-- Added [`midas/llm.py`](/C:/Users/ixush/OneDrive/Desktop/codex_repos/Midas/midas/llm.py)
+- Added [`midas/llm.py`](midas/llm.py)
 - Preserved Anthropic support
 - Added OpenAI support through a compatibility adapter that exposes the same
   `client.messages.create(...)` shape used by the rest of the codebase
 
 ### Runtime Reliability
 
-- Updated [`midas/kb.py`](/C:/Users/ixush/OneDrive/Desktop/codex_repos/Midas/midas/kb.py)
+- Updated [`midas/kb.py`](midas/kb.py)
   so all persisted files use explicit `utf-8`
-- Fixed Windows console issues in [`test_integration.py`](/C:/Users/ixush/OneDrive/Desktop/codex_repos/Midas/test_integration.py)
+- Fixed Windows console issues in [`test_integration.py`](test_integration.py)
   by reconfiguring stdout to UTF-8
 - Updated the repository README to match the new install and run flow
 
 ### Demo Support
 
-- Added [`midas/demo.py`](/C:/Users/ixush/OneDrive/Desktop/codex_repos/Midas/midas/demo.py)
+- Added [`midas/demo.py`](midas/demo.py)
   with:
   - a bundled mock LLM provider
   - synthetic data generation
