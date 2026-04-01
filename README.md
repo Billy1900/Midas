@@ -126,7 +126,7 @@ python -m midas demo --provider openai --api-key your_key_here
 ## Using Anthropic
 
 ```bash
-set ANTHROPIC_API_KEY=your_key_here
+export ANTHROPIC_API_KEY=your_key_here
 python -m midas demo --provider anthropic
 ```
 
