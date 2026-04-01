@@ -1,0 +1,9 @@
+{
+  "min_rank_ic": 0.02,
+  "min_ir": 0.5,
+  "max_turnover": 0.8,
+  "max_correlation": 0.7,
+  "max_overfit_ratio": 1.5,
+  "min_oos_ic": 0.01,
+  "min_composite": 0.3
+}

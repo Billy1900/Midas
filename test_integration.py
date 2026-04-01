@@ -5,7 +5,7 @@ Runs a complete end-to-end test of both the offline and online loops
 using a mock LLM client — no real Anthropic API key required.
 
 Run with:
-    python tests/test_integration.py
+    python test_integration.py
 """
 
 from __future__ import annotations
@@ -22,8 +22,10 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pandas as pd
 
-# Add parent to path so we can import midas directly
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add repo root to path so we can import the local midas package directly.
+sys.path.insert(0, str(Path(__file__).parent))
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 from midas.evaluator  import AlphaEvaluator, MultiAgentEvaluator
 from midas.kb         import KnowledgeBase
