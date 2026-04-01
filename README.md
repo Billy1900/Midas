@@ -100,7 +100,7 @@ python -m midas demo --report-path ./artifacts/demo_report.md
 Set your key:
 
 ```bash
-set OPENAI_API_KEY=your_key_here
+export OPENAI_API_KEY=your_key_here
 ```
 
 Then run:
