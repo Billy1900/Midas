@@ -245,18 +245,20 @@ def run_demo(
 
     rng = np.random.default_rng(7)
     ts = datetime(2025, 1, 1, 0, 0)
-    for _ in range(online_bars):
-        ts += timedelta(hours=1)
-        asyncio.run(
-            monitor.process_update(
-                timestamp=ts,
+
+    async def _process_all_updates() -> None:
+        ts_local = ts
+        for _ in range(online_bars):
+            ts_local += timedelta(hours=1)
+            await monitor.process_update(
+                timestamp=ts_local,
                 feature_values={online_feature_name: float(rng.normal(0, 1))},
                 forward_return=float(rng.normal(0, 0.01)),
                 regime="HIGH_VOL",
                 market_context={"btc_vol": "high", "regime": "HIGH_VOL"},
             )
-        )
 
+    asyncio.run(_process_all_updates())
     daily_report = monitor.generate_daily_report("2025-01-31")
     summary = {
         "provider": provider,
