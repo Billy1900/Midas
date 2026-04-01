@@ -84,12 +84,12 @@ class KnowledgeBase:
         path = self.root / "skills" / f"{name}.md"
         if not path.exists():
             return f"[skill '{name}' not found]"
-        return path.read_text()
+        return self._read_text(path)
 
     def load_all_skills(self) -> Dict[str, str]:
         skills: Dict[str, str] = {}
         for f in (self.root / "skills").glob("*.md"):
-            skills[f.stem] = f.read_text()
+            skills[f.stem] = self._read_text(f)
         return skills
 
     # ─────────────────────────────────────────────
@@ -100,24 +100,24 @@ class KnowledgeBase:
         path = self.root / "proposer" / "prompts" / f"{name}.md"
         if not path.exists():
             return f"[prompt '{name}' not found]"
-        return path.read_text()
+        return self._read_text(path)
 
     # ─────────────────────────────────────────────
     # Features
     # ─────────────────────────────────────────────
 
     def save_candidate(self, name: str, content: str):
-        (self.root / "knowledge" / "features" / "candidates" / f"{name}.md").write_text(content)
+        self._write_text(self.root / "knowledge" / "features" / "candidates" / f"{name}.md", content)
 
     def save_deployed(self, name: str, content: str):
-        (self.root / "knowledge" / "features" / "deployed" / f"{name}.md").write_text(content)
+        self._write_text(self.root / "knowledge" / "features" / "deployed" / f"{name}.md", content)
 
     def save_archived(self, name: str, content: str):
-        (self.root / "knowledge" / "features" / "archived" / f"{name}.md").write_text(content)
+        self._write_text(self.root / "knowledge" / "features" / "archived" / f"{name}.md", content)
 
     def load_feature(self, name: str, status: str = "deployed") -> Optional[str]:
         path = self.root / "knowledge" / "features" / status / f"{name}.md"
-        return path.read_text() if path.exists() else None
+        return self._read_text(path) if path.exists() else None
 
     def list_features(self, status: str = "deployed") -> List[str]:
         folder = self.root / "knowledge" / "features" / status
@@ -128,7 +128,7 @@ class KnowledgeBase:
         expressions = []
         folder = self.root / "knowledge" / "features" / "archived"
         for f in sorted(folder.glob("*.md"), reverse=True)[:n]:
-            txt = f.read_text()
+            txt = self._read_text(f)
             # Extract expression block between ``` markers following "expression:"
             m = re.search(r"expression:\s*\|\s*\n(.*?)```", txt, re.DOTALL)
             if m:
@@ -142,12 +142,12 @@ class KnowledgeBase:
     def save_offline_learning(self, slug: str, content: str):
         date = datetime.now().strftime("%Y-%m-%d")
         fname = f"{date}-{_slugify(slug)[:40]}.md"
-        (self.root / "knowledge" / "learnings" / "offline" / fname).write_text(content)
+        self._write_text(self.root / "knowledge" / "learnings" / "offline" / fname, content)
 
     def save_online_learning(self, slug: str, content: str):
         date = datetime.now().strftime("%Y-%m-%d")
         fname = f"{date}-{_slugify(slug)[:40]}.md"
-        (self.root / "knowledge" / "learnings" / "online" / fname).write_text(content)
+        self._write_text(self.root / "knowledge" / "learnings" / "online" / fname, content)
 
     def load_recent_learnings(self, n: int = 10) -> str:
         """Return n most-recent learning docs (both loops) as a single string."""
@@ -161,7 +161,7 @@ class KnowledgeBase:
                     dt = datetime.strptime(date_str, "%Y-%m-%d")
                 except ValueError:
                     dt = datetime.min
-                docs.append((dt, f.read_text()))
+                docs.append((dt, self._read_text(f)))
 
         docs.sort(key=lambda x: x[0], reverse=True)
         return "\n\n---\n\n".join(text for _, text in docs[:n])
@@ -172,7 +172,7 @@ class KnowledgeBase:
         for folder_name in ("online", "offline"):
             folder = self.root / "knowledge" / "learnings" / folder_name
             for f in sorted(folder.glob("*.md"), reverse=True):
-                txt = f.read_text()
+                txt = self._read_text(f)
                 if feature_name.lower() in txt.lower():
                     results.append(txt)
                 if len(results) >= n:
@@ -185,12 +185,12 @@ class KnowledgeBase:
 
     def save_regime_doc(self, regime_name: str, content: str):
         fname = f"{_slugify(regime_name)}.md"
-        (self.root / "knowledge" / "regimes" / fname).write_text(content)
+        self._write_text(self.root / "knowledge" / "regimes" / fname, content)
 
     def load_regime_docs(self) -> Dict[str, str]:
         docs: Dict[str, str] = {}
         for f in (self.root / "knowledge" / "regimes").glob("*.md"):
-            docs[f.stem] = f.read_text()
+            docs[f.stem] = self._read_text(f)
         return docs
 
     # ─────────────────────────────────────────────
@@ -198,11 +198,11 @@ class KnowledgeBase:
     # ─────────────────────────────────────────────
 
     def save_daily_report(self, date: str, content: str):
-        (self.root / "reports" / "daily" / f"{date}.md").write_text(content)
+        self._write_text(self.root / "reports" / "daily" / f"{date}.md", content)
 
     def save_diagnosis_report(self, slug: str, content: str):
         ts = datetime.now().strftime("%Y-%m-%d-%H%M")
-        (self.root / "reports" / "diagnoses" / f"{ts}-{_slugify(slug)[:30]}.md").write_text(content)
+        self._write_text(self.root / "reports" / "diagnoses" / f"{ts}-{_slugify(slug)[:30]}.md", content)
 
     # ─────────────────────────────────────────────
     # Seeding defaults
@@ -211,11 +211,11 @@ class KnowledgeBase:
     def _seed_default_skills(self):
         dsl_path = self.root / "skills" / "midas-dsl.md"
         if not dsl_path.exists():
-            dsl_path.write_text(_DEFAULT_DSL_SKILL)
+            self._write_text(dsl_path, _DEFAULT_DSL_SKILL)
 
         fp_path = self.root / "skills" / "factor-patterns.md"
         if not fp_path.exists():
-            fp_path.write_text(_DEFAULT_FACTOR_PATTERNS)
+            self._write_text(fp_path, _DEFAULT_FACTOR_PATTERNS)
 
     def _seed_default_prompts(self):
         prompts = {
@@ -226,7 +226,7 @@ class KnowledgeBase:
         for name, content in prompts.items():
             path = self.root / "proposer" / "prompts" / f"{name}.md"
             if not path.exists():
-                path.write_text(content)
+                self._write_text(path, content)
 
     def _seed_default_thresholds(self):
         path = self.root / "knowledge" / "thresholds.json"
@@ -240,13 +240,21 @@ class KnowledgeBase:
                 "min_oos_ic":        0.01,
                 "min_composite":     0.30,
             }
-            path.write_text(json.dumps(thresholds, indent=2))
+            self._write_text(path, json.dumps(thresholds, indent=2))
 
     def load_thresholds(self) -> Dict[str, float]:
         path = self.root / "knowledge" / "thresholds.json"
         if path.exists():
-            return json.loads(path.read_text())
+            return json.loads(self._read_text(path))
         return {}
+
+    @staticmethod
+    def _read_text(path: Path) -> str:
+        return path.read_text(encoding="utf-8")
+
+    @staticmethod
+    def _write_text(path: Path, content: str):
+        path.write_text(content, encoding="utf-8")
 
 
 # ─────────────────────────────────────────────

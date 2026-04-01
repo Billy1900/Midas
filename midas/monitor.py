@@ -480,6 +480,7 @@ class OnlineMonitor:
         kb:            KnowledgeBase,
         feature_names: List[str],
         llm_client,
+        model: Optional[str] = None,
         alert_thresholds: Optional[Dict[str, float]] = None,
         on_alert:         Optional[Callable[[Alert], None]]   = None,
         on_kill:          Optional[Callable[[str],   None]]   = None,
@@ -487,7 +488,7 @@ class OnlineMonitor:
         self.kb       = kb
         self.engine   = MonitorEngine(feature_names)
         self.alerter  = AlertEngine(alert_thresholds)
-        self.diagnoser= DiagnoseAgent(kb, llm_client)
+        self.diagnoser= DiagnoseAgent(kb, llm_client, model=model or "claude-sonnet-4-20250514")
 
         self.on_alert = on_alert or (lambda a: logger.warning(f"ALERT {a.severity}: {a.feature_name} — {a.threshold_breached}"))
         self.on_kill  = on_kill  or (lambda f: logger.critical(f"KILL SIGNAL: {f}"))

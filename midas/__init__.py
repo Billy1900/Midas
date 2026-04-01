@@ -19,6 +19,7 @@ from .monitor    import OnlineMonitor
 from .loops      import OfflineCompoundLoop, OfflineLoopConfig
 from .promoter   import FeaturePromoter
 from .kb         import KnowledgeBase
+from .factory    import Midas, create_midas
 
 __all__ = [
     "AlphaEvaluator",
@@ -29,4 +30,6 @@ __all__ = [
     "OfflineLoopConfig",
     "FeaturePromoter",
     "KnowledgeBase",
+    "Midas",
+    "create_midas",
 ]
