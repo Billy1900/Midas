@@ -20,6 +20,7 @@ from .loops      import OfflineCompoundLoop, OfflineLoopConfig
 from .promoter   import FeaturePromoter
 from .kb         import KnowledgeBase
 from .factory    import Midas, create_midas
+from .fxmacrodata import load_release_calendar
 
 __all__ = [
     "AlphaEvaluator",
@@ -32,4 +33,5 @@ __all__ = [
     "KnowledgeBase",
     "Midas",
     "create_midas",
+    "load_release_calendar",
 ]
